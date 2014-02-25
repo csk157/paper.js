@@ -64,6 +64,7 @@ var paper = new function(undefined) {
 
 /*#*/ include('project/Project.js');
 /*#*/ include('project/Symbol.js');
+// /*#*/ include('project/Pattern.js');
 
 /*#*/ include('item/Item.js');
 /*#*/ include('item/Group.js');
@@ -90,6 +91,7 @@ var paper = new function(undefined) {
 
 /*#*/ include('style/Color.js');
 /*#*/ include('style/Gradient.js');
+/*#*/ include('style/Pattern.js');
 /*#*/ include('style/GradientStop.js');
 /*#*/ include('style/Style.js');
 
