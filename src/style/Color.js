@@ -47,7 +47,8 @@ var Color = Base.extend(new function() {
 		rgb: ['red', 'green', 'blue'],
 		hsb: ['hue', 'saturation', 'brightness'],
 		hsl: ['hue', 'saturation', 'lightness'],
-		gradient: ['gradient', 'origin', 'destination', 'highlight']
+		gradient: ['gradient', 'origin', 'destination', 'highlight'],
+		pattern: ['pattern', 'item']
 	};
 
 	// Parsers of values for setters, by type and property
@@ -230,9 +231,20 @@ var Color = Base.extend(new function() {
 				// Both hue and saturation have overlapping properties between
 				// hsb and hsl. Handle this here separately, by testing for
 				// overlaps and skipping conversion if the type is /hs[bl]/
-				hasOverlap = /^(hue|saturation)$/.test(name),
+				hasOverlap = /^(hue|saturation)$/.test(name);
 				// Produce value parser function for the given type / propeprty
 				// name combination.
+				var parser;
+				// console.log(part);
+				if(name === 'pattern'){
+					parser = componentParsers[type][index] = function(value) {
+						console.log("parser pattern value",value);
+						value = new Pattern(value.item);
+						// value._addOwner(this);
+						return value;
+					};
+				}
+				else
 				parser = componentParsers[type][index] = name === 'gradient'
 					? function(value) {
 						var current = this._components[0];
@@ -485,6 +497,7 @@ var Color = Base.extend(new function() {
 		 * path.fillColor = gradientColor;
 		 */
 		initialize: function Color(arg) {
+			console.log("Initialize Color args", arg);
 			// We are storing color internally as an array of components
 			var slice = Array.prototype.slice,
 				args = arguments,
@@ -556,6 +569,7 @@ var Color = Base.extend(new function() {
 						components.length--;
 					}
 				} else if (argType === 'object') {
+					console.log("arg type is object", arg);
 					if (arg.constructor === Color) {
 						type = arg._type;
 						components = arg._components.slice();
@@ -572,18 +586,28 @@ var Color = Base.extend(new function() {
 					} else if (arg.constructor === Gradient) {
 						type = 'gradient';
 						values = args;
+					} else if (arg.constructor === Pattern) {
+						console.log("Arg constructor - pattern");
+						type = 'pattern';
+						values = args;
 					} else {
-						// Determine type by presence of object property names
-						type = 'hue' in arg
-							? 'lightness' in arg
-								? 'hsl'
-								: 'hsb'
-							: 'gradient' in arg || 'stops' in arg
-									|| 'radial' in arg
-								? 'gradient'
-								: 'gray' in arg
-									? 'gray'
-									: 'rgb';
+						if('pattern' in arg){
+							type = 'pattern';
+							console.log("pattern in args");
+						}
+						else {
+							// Determine type by presence of object property names
+							type = 'hue' in arg
+								? 'lightness' in arg
+									? 'hsl'
+									: 'hsb'
+								: 'gradient' in arg || 'stops' in arg
+										|| 'radial' in arg
+									? 'gradient'
+									: 'gray' in arg
+										? 'gray'
+										: 'rgb';
+						}
 						// Convert to array and parse in one loop, for efficiency
 						var properties = types[type];
 							parsers = parse && componentParsers[type];
@@ -833,36 +857,43 @@ var Color = Base.extend(new function() {
 			if (this._canvasStyle)
 				return this._canvasStyle;
 			// Normal colors are simply represented by their CSS string.
-			if (this._type !== 'gradient')
+			if (this._type !== 'gradient' && this._type !== 'pattern')
 				return this._canvasStyle = this.toCSS();
-			// Gradient code form here onwards
-			var components = this._components,
-				gradient = components[0],
-				stops = gradient._stops,
-				origin = components[1],
-				destination = components[2],
-				canvasGradient;
-			if (gradient._radial) {
-				var radius = destination.getDistance(origin),
-					highlight = components[3];
-				if (highlight) {
-					var vector = highlight.subtract(origin);
-					if (vector.getLength() > radius)
-						highlight = origin.add(vector.normalize(radius - 0.1));
+
+			if(this._type === 'gradient') {
+				// Gradient code form here onwards
+				var components = this._components,
+					gradient = components[0],
+					stops = gradient._stops,
+					origin = components[1],
+					destination = components[2],
+					canvasGradient;
+				if (gradient._radial) {
+					var radius = destination.getDistance(origin),
+						highlight = components[3];
+					if (highlight) {
+						var vector = highlight.subtract(origin);
+						if (vector.getLength() > radius)
+							highlight = origin.add(vector.normalize(radius - 0.1));
+					}
+					var start = highlight || origin;
+					canvasGradient = ctx.createRadialGradient(start.x, start.y,
+							0, origin.x, origin.y, radius);
+				} else {
+					canvasGradient = ctx.createLinearGradient(origin.x, origin.y,
+							destination.x, destination.y);
 				}
-				var start = highlight || origin;
-				canvasGradient = ctx.createRadialGradient(start.x, start.y,
-						0, origin.x, origin.y, radius);
-			} else {
-				canvasGradient = ctx.createLinearGradient(origin.x, origin.y,
-						destination.x, destination.y);
+				for (var i = 0, l = stops.length; i < l; i++) {
+					var stop = stops[i];
+					canvasGradient.addColorStop(stop._rampPoint,
+							stop._color.toCanvasStyle());
+				}
+				return this._canvasStyle = canvasGradient;
+			} else if (this._type === 'pattern') {
+				var pattern = this._components[0];
+				// console.log(pattern);
+				return this._canvasStyle = ctx.createPattern(pattern.raster.getCanvas(), 'repeat');
 			}
-			for (var i = 0, l = stops.length; i < l; i++) {
-				var stop = stops[i];
-				canvasGradient.addColorStop(stop._rampPoint,
-						stop._color.toCanvasStyle());
-			}
-			return this._canvasStyle = canvasGradient;
 		},
 
 		/**
