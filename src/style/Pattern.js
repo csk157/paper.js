@@ -4,7 +4,10 @@ var Pattern = Base.extend({
 		// Define this Pattern's unique id.
 		this._id = Pattern._id = (Pattern._id || 0) + 1;
 		item.remove();
-		if (item) {
+		if(item._class == 'Raster') {
+			this.item = item;
+			this.raster = item;
+		} else if (item) {
 			this.item = item.clone(false);
 			this.raster = this.item.rasterize();
 		} else {

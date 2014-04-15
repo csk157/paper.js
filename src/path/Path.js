@@ -2061,7 +2061,6 @@ var Path = PathItem.extend(/** @lends Path# */{
 				if (!compound)
 					this._currentPath = ctx.currentPath;
 			}
-
 			if (!clip && !compound && (hasFill || hasStroke)) {
 				// If the path is part of a compound path or doesn't have a fill
 				// or stroke, there is no need to continue.

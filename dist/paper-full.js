@@ -9,7 +9,7 @@
  *
  * All rights reserved.
  *
- * Date: Tue Dec 17 22:07:34 2013 +0100
+ * Date: Tue Feb 25 10:49:17 2014 +0100
  *
  ***
  *
@@ -7135,7 +7135,6 @@ var Path = PathItem.extend({
 				if (!compound)
 					this._currentPath = ctx.currentPath;
 			}
-
 			if (!clip && !compound && (hasFill || hasStroke)) {
 				this._setStyles(ctx);
 				if (hasFill) {
@@ -8684,7 +8683,6 @@ var Color = Base.extend(new function() {
 				var parser;
 				if(name === 'pattern'){
 					parser = componentParsers[type][index] = function(value) {
-						console.log("parser pattern value",value);
 						value = new Pattern(value.item);
 						return value;
 					};
@@ -8747,7 +8745,6 @@ var Color = Base.extend(new function() {
 		_readIndex: true,
 
 		initialize: function Color(arg) {
-			console.log("Initialize Color args", arg);
 			var slice = Array.prototype.slice,
 				args = arguments,
 				read = 0,
@@ -8802,7 +8799,6 @@ var Color = Base.extend(new function() {
 						components.length--;
 					}
 				} else if (argType === 'object') {
-					console.log("arg type is object", arg);
 					if (arg.constructor === Color) {
 						type = arg._type;
 						components = arg._components.slice();
@@ -8818,13 +8814,11 @@ var Color = Base.extend(new function() {
 						type = 'gradient';
 						values = args;
 					} else if (arg.constructor === Pattern) {
-						console.log("Arg constructor - pattern");
 						type = 'pattern';
 						values = args;
 					} else {
 						if('pattern' in arg){
 							type = 'pattern';
-							console.log("pattern in args");
 						}
 						else {
 							type = 'hue' in arg
@@ -9213,7 +9207,10 @@ var Pattern = Base.extend({
 	initialize: function Pattern(item, dontCenter) {
 		this._id = Pattern._id = (Pattern._id || 0) + 1;
 		item.remove();
-		if (item) {
+		if(item._class == 'Raster') {
+			this.item = item;
+			this.raster = item;
+		} else if (item) {
 			this.item = item.clone(false);
 			this.raster = this.item.rasterize();
 		} else {

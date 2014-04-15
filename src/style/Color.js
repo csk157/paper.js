@@ -238,7 +238,6 @@ var Color = Base.extend(new function() {
 				// console.log(part);
 				if(name === 'pattern'){
 					parser = componentParsers[type][index] = function(value) {
-						console.log("parser pattern value",value);
 						value = new Pattern(value.item);
 						// value._addOwner(this);
 						return value;
@@ -497,7 +496,6 @@ var Color = Base.extend(new function() {
 		 * path.fillColor = gradientColor;
 		 */
 		initialize: function Color(arg) {
-			console.log("Initialize Color args", arg);
 			// We are storing color internally as an array of components
 			var slice = Array.prototype.slice,
 				args = arguments,
@@ -569,7 +567,6 @@ var Color = Base.extend(new function() {
 						components.length--;
 					}
 				} else if (argType === 'object') {
-					console.log("arg type is object", arg);
 					if (arg.constructor === Color) {
 						type = arg._type;
 						components = arg._components.slice();
@@ -587,13 +584,11 @@ var Color = Base.extend(new function() {
 						type = 'gradient';
 						values = args;
 					} else if (arg.constructor === Pattern) {
-						console.log("Arg constructor - pattern");
 						type = 'pattern';
 						values = args;
 					} else {
 						if('pattern' in arg){
 							type = 'pattern';
-							console.log("pattern in args");
 						}
 						else {
 							// Determine type by presence of object property names
