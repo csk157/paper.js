@@ -16,6 +16,9 @@
 		};
 		var lastScale = 1;
 		var center = view.center;
+		raster.shadowColor = "#000";
+		raster.shadowBlur = 5;
+		raster.shadowOffset = new Point(2,2);
 		function onFrame(event) {
 			var scale = (Math.sin(event.time * 2) + 1) / 2;
 			raster.scale(scale / lastScale);
