@@ -98,7 +98,7 @@ var Color = Base.extend(new function() {
 				cached = colorCache[string] = [
 					data[0] / 255,
 					data[1] / 255,
-					data[2] / 255				
+					data[2] / 255
 				];
 			}
 			components = cached.slice();
@@ -208,6 +208,16 @@ var Color = Base.extend(new function() {
 		},
 
 		'gradient-rgb': function(/* gradient */) {
+			// TODO: Implement
+			return [];
+		},
+
+		'pattern-rgb': function(/* pattern */) {
+			// TODO: Implement
+			return [];
+		},
+
+		'rgb-pattern': function(/* pattern */) {
 			// TODO: Implement
 			return [];
 		},
@@ -380,7 +390,7 @@ var Color = Base.extend(new function() {
 		 * as an alternative to providing a gradient object<br>
 		 *
 		 * @name Color#initialize
-		 * @param {Object} object an object describing the components and 
+		 * @param {Object} object an object describing the components and
 		 *        properties of the color.
 		 *
 		 * @example {@paperscript}
@@ -412,7 +422,7 @@ var Color = Base.extend(new function() {
 		 * // the path and to position the gradient color:
 		 * var topLeft = view.center - [80, 80];
 		 * var bottomRight = view.center + [80, 80];
- 		 * 
+ 		 *
 		 * var path = new Path.Rectangle({
 		 *	topLeft: topLeft,
 		 *	bottomRight: bottomRight,
@@ -1116,7 +1126,7 @@ var Color = Base.extend(new function() {
 		 *	center: view.center,
 		 *	radius: view.bounds.height * 0.4
 		 * });
-		 * 
+		 *
 		 * path.fillColor = {
 		 *	gradient: {
 		 *		stops: ['yellow', 'red', 'black'],
@@ -1125,7 +1135,7 @@ var Color = Base.extend(new function() {
 		 *	origin: path.position,
 		 *	destination: path.bounds.rightCenter
 		 * };
-		 * 
+		 *
 		 * function onMouseMove(event) {
 		 *	// Set the origin highlight of the path's gradient color
 		 *	// to the position of the mouse:
