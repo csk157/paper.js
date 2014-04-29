@@ -338,7 +338,9 @@ new function() {
 									? exportPattern(value, item)
 									: value.toCSS(true)
 							: type === 'array'
-								? value.join(',')
+								? value[0]
+									? value.join(',')
+									: 'none'
 								: type === 'lookup'
 									? entry.toSVG[value]
 									: value;
