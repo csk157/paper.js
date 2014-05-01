@@ -9,7 +9,7 @@
  *
  * All rights reserved.
  *
- * Date: Tue Apr 15 12:01:53 2014 +0200
+ * Date: Thu May 1 09:46:55 2014 +0200
  *
  ***
  *
@@ -8576,7 +8576,7 @@ var Color = Base.extend(new function() {
 				cached = colorCache[string] = [
 					data[0] / 255,
 					data[1] / 255,
-					data[2] / 255				
+					data[2] / 255
 				];
 			}
 			components = cached.slice();
@@ -8675,6 +8675,14 @@ var Color = Base.extend(new function() {
 		},
 
 		'gradient-rgb': function() {
+			return [];
+		},
+
+		'pattern-rgb': function() {
+			return [];
+		},
+
+		'rgb-pattern': function() {
 			return [];
 		},
 
@@ -11185,11 +11193,13 @@ new function() {
 		return node;
 	}
 
-	function exportRaster(item) {
+	function exportRaster(item, options) {
 		var attrs = getTransform(item, true),
 			size = item.getSize();
-		attrs.x -= size.width / 2;
-		attrs.y -= size.height / 2;
+		if (!options.pattern) {
+			attrs.x -= size.width / 2;
+			attrs.y -= size.height / 2;
+        	}
 		attrs.width = size.width;
 		attrs.height = size.height;
 		attrs.href = item.toDataURL();
@@ -11235,7 +11245,7 @@ new function() {
 		return createElement(type, attrs);
 	}
 
-	function exportShape(item) {
+	function exportShape(item, options) {
 		var shape = item._shape,
 			radius = item._radius,
 			attrs = getTransform(item, true, shape !== 'rectangle');
@@ -11254,6 +11264,10 @@ new function() {
 		if (radius) {
 			if (shape === 'circle') {
 				attrs.r = radius;
+				if (options.pattern) {
+					attrs.cx += radius;
+					attrs.cy += radius;
+				}
 			} else {
 				attrs.rx = radius.width;
 				attrs.ry = radius.height;
@@ -11289,6 +11303,24 @@ new function() {
 		attrs.width = formatter.number(bounds.width);
 		attrs.height = formatter.number(bounds.height);
 		return createElement('use', attrs);
+	}
+
+	function exportPattern(color) {
+		var patternNode = getDefinition(pattern, 'color');
+		if (!patternNode) {
+			var pattern = color.getPattern(),
+				patternItem = color.getPattern().item,
+				itemBounds = patternItem.getBounds();
+			var attrs = {
+				patternUnits: "userSpaceOnUse",
+				width: itemBounds.width,
+				height: itemBounds.height
+			};
+			patternNode = createElement("pattern", attrs);
+			patternNode.appendChild(exportSVG(patternItem, {matchShapes: true, pattern: true}));
+			setDefinition(pattern, patternNode, 'color');
+		}
+		return 'url(#' + patternNode.id + ')';
 	}
 
 	function exportGradient(color) {
@@ -11381,9 +11413,13 @@ new function() {
 						: type === 'color'
 							? value.gradient
 								? exportGradient(value, item)
-								: value.toCSS(true)
+								: value.pattern
+									? exportPattern(value, item)
+									: value.toCSS(true)
 							: type === 'array'
-								? value.join(',')
+								? value[0]
+									? value.join(',')
+									: 'none'
 								: type === 'lookup'
 									? entry.toSVG[value]
 									: value;
