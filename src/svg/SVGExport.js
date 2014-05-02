@@ -327,7 +327,7 @@ new function() {
 						attrs[entry.attribute + '-opacity'] = alpha;
 				}
 				attrs[entry.attribute] = value == null
-					? type === 'number'
+					? ((type === 'number') || (type === 'lookup'))
 						? 'inherit'
 						: 'none'
 					: type === 'number'
