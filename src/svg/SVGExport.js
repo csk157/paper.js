@@ -107,7 +107,7 @@ new function() {
 		if (!options.pattern) {
 			attrs.x -= size.width / 2;
 			attrs.y -= size.height / 2;
-        	}
+		}
 		attrs.width = size.width;
 		attrs.height = size.height;
 		attrs.href = item.toDataURL();
@@ -327,7 +327,9 @@ new function() {
 						attrs[entry.attribute + '-opacity'] = alpha;
 				}
 				attrs[entry.attribute] = value == null
-					? 'none'
+					? type === 'number'
+						? 'inherit'
+						: 'none'
 					: type === 'number'
 						? formatter.number(value)
 						: type === 'color'
