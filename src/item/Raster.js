@@ -666,6 +666,14 @@ var Raster = Item.extend(/** @lends Raster# */{
             // Handle opacity for Rasters separately from the rest, since
             // Rasters never draw a stroke. See Item#draw().
             ctx.globalAlpha = this._opacity;
+
+            if(this.getStyle().hasShadow()) {
+                var st = this.getStyle();
+                ctx.shadowColor = st.shadowColor.toCanvasStyle(ctx);
+                ctx.shadowBlur = st.shadowBlur;
+                ctx.shadowOffsetX = st.shadowOffset.x;
+                ctx.shadowOffsetY = st.shadowOffset.y;
+            }
             ctx.drawImage(element,
                     -this._size.width / 2, -this._size.height / 2);
         }

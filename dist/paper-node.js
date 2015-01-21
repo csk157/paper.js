@@ -9,7 +9,7 @@
  *
  * All rights reserved.
  *
- * Date: Sat Jan 10 22:06:11 2015 +0100
+ * Date: Wed Jan 21 11:20:43 2015 +0100
  *
  ***
  *
@@ -4962,6 +4962,14 @@ var Raster = Item.extend({
 		var element = this.getElement();
 		if (element) {
 			ctx.globalAlpha = this._opacity;
+
+			if(this.getStyle().hasShadow()) {
+				var st = this.getStyle();
+				ctx.shadowColor = st.shadowColor.toCanvasStyle(ctx);
+				ctx.shadowBlur = st.shadowBlur;
+				ctx.shadowOffsetX = st.shadowOffset.x;
+				ctx.shadowOffsetY = st.shadowOffset.y;
+			}
 			ctx.drawImage(element,
 					-this._size.width / 2, -this._size.height / 2);
 		}
