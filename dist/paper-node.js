@@ -9,7 +9,7 @@
  *
  * All rights reserved.
  *
- * Date: Wed Jan 21 11:20:43 2015 +0100
+ * Date: Wed Jan 21 14:59:21 2015 +0100
  *
  ***
  *
@@ -9047,12 +9047,6 @@ var PathFitter = Base.extend({
 				points.push(point);
 				prev = point;
 			}
-		}
-
-		if (path._closed) {
-			this.closed = true;
-			points.unshift(points[points.length - 1]);
-			points.push(points[1]);
 		}
 
 		this.error = error;
