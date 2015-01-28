@@ -34,13 +34,18 @@ var PathFitter = Base.extend({
             }
         }
 
+        // ~~INGO COMMENT~~
+        // ~~~~~~~~~~~~~~~~
+        // Commented out because it cuts too many corners, making simplified and not simplified
+        // versions to be noticeably different
+
         // We need to duplicate the first and last segment when simplifying a
         // closed path.
-        if (path._closed) {
-            this.closed = true;
-            points.unshift(points[points.length - 1]);
-            points.push(points[1]); // The point previously at index 0 is now 1.
-        }
+        // if (path._closed) {
+        //     this.closed = true;
+        //     points.unshift(points[points.length - 1]);
+        //     points.push(points[1]); // The point previously at index 0 is now 1.
+        // }
 
         this.error = error;
     },
